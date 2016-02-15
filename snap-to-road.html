@@ -10,7 +10,6 @@
         margin: 0px;
         padding: 0px
       }
-
       #panel {
         position: absolute;
         top: 5px;
@@ -21,7 +20,6 @@
         padding: 5px;
         border: 1px solid #999;
       }
-
       #bar {
         width: 240px;
         background-color: rgba(255, 255, 255, 0.75);
@@ -29,7 +27,6 @@
         padding: 4px;
         border-radius: 4px;
       }
-
       #autoc {
         width: 100%;
         box-sizing: border-box;
@@ -41,92 +38,91 @@
       src="https://maps.googleapis.com/maps/api/js?libraries=drawing,places"></script>
     <script>
 
-var apiKey = 'Your key';
+    var apiKey = 'Your key';
 
 
-var map;
-var drawingManager;
-var placeIdArray = [];
-var polylines = [];
-var snappedCoordinates = [];
+    var map;
+    var drawingManager;
+    var placeIdArray = [];
+    var polylines = [];
+    var snappedCoordinates = [];
 
-function initialize() {
-    console.log("Called");
-    var name = "unknown";
-    var LatLong=[];
-  var mapOptions = {
-    zoom: 17,
-    center: {lat: -1.2717985, lng: 36.8022502}
-  };
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    function initialize() {
+        console.log("Called");
+        var name = "unknown";
+        var LatLong=[];
+      var mapOptions = {
+        zoom: 17,
+        center: {lat: -1.2717985, lng: 36.8022502}
+      };
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-  // Adds a Places search box. Searching for a place will center the map on that
-  // location.
-  map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
-      document.getElementById('bar'));
-  var autocomplete = new google.maps.places.Autocomplete(
-      document.getElementById('autoc'));
-  autocomplete.bindTo('bounds', map);
-  autocomplete.addListener('place_changed', function() {
-    console.log("clcked");1
-    var place = autocomplete.getPlace();
-    if (place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);
-    }
-  });
-
-  // Enables the polyline drawing control. Click on the map to start drawing a
-  // polyline. Each click will add a new vertice. Double-click to stop drawing.
-    drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: google.maps.drawing.OverlayType.POLYLINE,
-        drawingControl: true,
-        drawingControlOptions: {
-          position: google.maps.ControlPosition.TOP_CENTER,
-          drawingModes: [
-            google.maps.drawing.OverlayType.POLYLINE
-          ]
-        },
-        polylineOptions: {
-          strokeColor: '#696969',
-          strokeWeight: 2
+      // Adds a Places search box. Searching for a place will center the map on that
+      // location.
+      map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
+          document.getElementById('bar'));
+      var autocomplete = new google.maps.places.Autocomplete(
+          document.getElementById('autoc'));
+      autocomplete.bindTo('bounds', map);
+      autocomplete.addListener('place_changed', function() {
+        var place = autocomplete.getPlace();
+        if (place.geometry.viewport) {
+          map.fitBounds(place.geometry.viewport);
+        } else {
+          map.setCenter(place.geometry.location);
+          map.setZoom(17);
         }
-    });
-    drawingManager.setMap(map);
+      });
 
-    var ref = new Firebase("https://sizzling-heat-4165.firebaseio.com");
-    var queryRef = ref.orderByChild("User").equalTo(name);
-      queryRef.on("child_added", function(snapshot, prevChildKey) {
-          var data = snapshot.val();
-          var myCount = snapshot.numChildren();
-          var locationString=data.location.latitude+","+data.location.longitude;
-          LatLong.push(locationString);
-          if(LatLong.length==30){
-            console.log("LatLong",LatLong);
-              var pathValues = ["-1.2721275,36.8033496","-1.2722046,36.8036557","-1.2723698,36.8036855","-1.27242,36.8035037",
-              "-1.2723644,36.8033635","-1.2717985,36.8022502","-1.2717985,36.8022502","-1.2715556,36.8015249","-1.2716255,36.801483",
-              "-1.2720232,36.8012906","-1.2720232,36.8012906","-1.2724561,36.8011083","-1.2732669,36.800876","-1.2737362,36.8007035",
-              "-1.2742665,36.8005904","-1.2742665,36.8005904","-1.2742819,36.8006332","-1.2742774,36.8007121","-1.2742529,36.800716",
-              "-1.2741973,36.8008779", "-1.2742482,36.8010146", "-1.2740813,36.8014389","-1.2739663,36.8018592","1.2740205,36.8021069",
-              "-1.2740763,36.8024395","-1.2743792,36.8023535","-1.2755266,36.8033254","-1.2755266,36.8033254","-1.2771421,36.8039939",
-              "-1.2771421,36.8039939","-1.2771709,36.8043011","-1.2771679,36.8046909","-1.2771679,36.8046909","-1.2771102,36.8048143",
-              "-1.2767271,36.8058236","-1.2767271,36.8058236","-1.2764893,36.8062871","-1.2764849,36.8067399","-1.2764505,36.8071166",
-              "-1.2764502,36.8073319","-1.2768216,36.8074954","-1.2769332,36.8076413","-1.2771612,36.8077308","-1.2778883,36.8083641",
-              "-1.2782661,36.8084494","-1.2782661,36.8084494","-1.2785252,36.8085016","-1.278673,36.8085129","-1.2787131,36.8085408",
-              "-1.2789415,36.8088444","-1.2790483,36.8089371","-1.2795931,36.8092815","-1.2795931,36.8092815","-1.2797407,36.8094876",
-              "-1.2798755,36.8097803","-1.2798755,36.8097803","-1.279978,36.810021","-1.2800765,36.8100444","-1.2801701,36.8101171",
-              "-1.280233,36.8101928","-1.2802883,36.8102686","-1.2803813,36.8102655","-1.2803813,36.8102655","-1.2804454,36.8103245",
-              "-1.2804548,36.810451","-1.2805125,36.8105951","-1.2806029,36.8107012","-1.2806029,36.8107012","-1.2807436,36.8108052",
-              "-1.2807436,36.8108052","-1.2810558,36.8112481","-1.2810558,36.8112481","-1.2811534,36.8113503","-1.2812502,36.8114133",
-              "-1.2813746,36.8115699","-1.2813746,36.8115699","-1.2814817,36.8116648","-1.2816182,36.8117691","-1.2817358,36.8118453",
-              "-1.281875,36.8118276","-1.2819107,36.8117607","-1.2819466,36.8117075","-1.2819312,36.8117223","-1.2819159,36.8117786",
-              "-1.2819159,36.8117786","-1.2822563,36.8118086","-1.2829464,36.8113318","-1.2829464,36.8113318","-1.2842141,36.811806",
-              "-1.2842141,36.811806","-1.2844216,36.8119489","-1.2846963,36.8122953","-1.2849831,36.8126257","-1.2849831,36.8126257"];
-            drawSnaps(pathValues);
+    // Enables the polyline drawing control. Click on the map to start drawing a
+    // polyline. Each click will add a new vertice. Double-click to stop drawing.
+      drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.POLYLINE,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [
+              google.maps.drawing.OverlayType.POLYLINE
+            ]
+          },
+          polylineOptions: {
+            strokeColor: '#696969',
+            strokeWeight: 2
           }
       });
+      drawingManager.setMap(map);
+
+      var ref = new Firebase("https://sizzling-heat-4165.firebaseio.com");
+      var queryRef = ref.orderByChild("User").equalTo(name);
+        queryRef.on("child_added", function(snapshot, prevChildKey) {
+            var data = snapshot.val();
+            var myCount = snapshot.numChildren();
+            var locationString=data.location.latitude+","+data.location.longitude;
+            LatLong.push(locationString);
+            if(LatLong.length==30){
+              console.log("LatLong",LatLong);
+                var pathValues = ["-1.2721275,36.8033496","-1.2722046,36.8036557","-1.2723698,36.8036855","-1.27242,36.8035037",
+                "-1.2723644,36.8033635","-1.2717985,36.8022502","-1.2717985,36.8022502","-1.2715556,36.8015249","-1.2716255,36.801483",
+                "-1.2720232,36.8012906","-1.2720232,36.8012906","-1.2724561,36.8011083","-1.2732669,36.800876","-1.2737362,36.8007035",
+                "-1.2742665,36.8005904","-1.2742665,36.8005904","-1.2742819,36.8006332","-1.2742774,36.8007121","-1.2742529,36.800716",
+                "-1.2741973,36.8008779", "-1.2742482,36.8010146", "-1.2740813,36.8014389","-1.2739663,36.8018592","1.2740205,36.8021069",
+                "-1.2740763,36.8024395","-1.2743792,36.8023535","-1.2755266,36.8033254","-1.2755266,36.8033254","-1.2771421,36.8039939",
+                "-1.2771421,36.8039939","-1.2771709,36.8043011","-1.2771679,36.8046909","-1.2771679,36.8046909","-1.2771102,36.8048143",
+                "-1.2767271,36.8058236","-1.2767271,36.8058236","-1.2764893,36.8062871","-1.2764849,36.8067399","-1.2764505,36.8071166",
+                "-1.2764502,36.8073319","-1.2768216,36.8074954","-1.2769332,36.8076413","-1.2771612,36.8077308","-1.2778883,36.8083641",
+                "-1.2782661,36.8084494","-1.2782661,36.8084494","-1.2785252,36.8085016","-1.278673,36.8085129","-1.2787131,36.8085408",
+                "-1.2789415,36.8088444","-1.2790483,36.8089371","-1.2795931,36.8092815","-1.2795931,36.8092815","-1.2797407,36.8094876",
+                "-1.2798755,36.8097803","-1.2798755,36.8097803","-1.279978,36.810021","-1.2800765,36.8100444","-1.2801701,36.8101171",
+                "-1.280233,36.8101928","-1.2802883,36.8102686","-1.2803813,36.8102655","-1.2803813,36.8102655","-1.2804454,36.8103245",
+                "-1.2804548,36.810451","-1.2805125,36.8105951","-1.2806029,36.8107012","-1.2806029,36.8107012","-1.2807436,36.8108052",
+                "-1.2807436,36.8108052","-1.2810558,36.8112481","-1.2810558,36.8112481","-1.2811534,36.8113503","-1.2812502,36.8114133",
+                "-1.2813746,36.8115699","-1.2813746,36.8115699","-1.2814817,36.8116648","-1.2816182,36.8117691","-1.2817358,36.8118453",
+                "-1.281875,36.8118276","-1.2819107,36.8117607","-1.2819466,36.8117075","-1.2819312,36.8117223","-1.2819159,36.8117786",
+                "-1.2819159,36.8117786","-1.2822563,36.8118086","-1.2829464,36.8113318","-1.2829464,36.8113318","-1.2842141,36.811806",
+                "-1.2842141,36.811806","-1.2844216,36.8119489","-1.2846963,36.8122953","-1.2849831,36.8126257","-1.2849831,36.8126257"];
+              drawSnaps(pathValues);
+            }
+        });
 
       function drawSnaps(LatLong){
         $.get('https://roads.googleapis.com/v1/snapToRoads', {
@@ -258,16 +254,11 @@ $(window).load(initialize);
 
     </script>
   </head>
-
   <body>
     <div id="map"></div>
     <div id="bar">
       <p class="auto"><input type="text" id="autoc"/></p>
       <p><a id="clear" href="#">Click here</a> to clear map.</p>
-    </div>
-    <div style="height:50px">
-    Good<br>
-    Yap
     </div>
   </body>
 </html>

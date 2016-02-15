@@ -1,2 +1,2 @@
-# snap-the-road
-Draws routegiven the coordinates
+# snap-to-road
+Draws route given coordinates from one point to another.
